@@ -122,8 +122,18 @@
   </div>
 </div>
 
-<!-- Carga tu JS como módulo -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+  }
+}
+</script>
+
+<!-- Tu app en modo módulo -->
 <script type="module" src="./app.js"></script>
+
 
 
 </body>
