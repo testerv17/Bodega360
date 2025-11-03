@@ -186,6 +186,9 @@ function openProductModal(p){
   // Viewer
   initViewer();
   loadModel(p.modelUrl);
+
+  // Ajusta tamaño cuando el modal ya está pintado
+  setTimeout(resizeViewer, 0);
 }
 
 function closeProductModal(){
@@ -198,30 +201,35 @@ modalClose.addEventListener('click', closeProductModal);
 modalBackdrop.addEventListener('click', closeProductModal);
 document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('is-open')) closeProductModal(); });
 
+// --- Viewer setup con guards de seguridad ---
 function initViewer(){
-  if (r3d) { resizeViewer(); return; }
+  // Si ya existe, solo ajusta tamaño y sal
+  if (r3d && cam && scn) { resizeViewer(); return; }
 
   // 1) Renderer
   r3d = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias: true });
-  resizeViewer();
 
-  // 2) Scene + Camera
+  // 2) Scene
   scn = new THREE.Scene();
   scn.background = new THREE.Color(0x0b1018);
 
+  // 3) Camera (antes de resizeViewer)
   cam = new THREE.PerspectiveCamera(
     60,
-    viewerCanvas.clientWidth / viewerCanvas.clientHeight,
+    Math.max(1, viewerCanvas.clientWidth) / Math.max(1, viewerCanvas.clientHeight || 1),
     0.1,
     100
   );
   cam.position.set(2.5, 2, 3.5);
 
-  // 3) Controles
+  // 4) Ajuste de tamaño ya con cámara creada
+  resizeViewer();
+
+  // 5) Controles
   ctl = new OrbitControls(cam, r3d.domElement);
   ctl.enableDamping = true;
 
-  // 4) Luces + placeholder
+  // 6) Luces + placeholder
   const key = new THREE.DirectionalLight(0xffffff, 1.2);
   key.position.set(5, 5, 5);
   scn.add(key, new THREE.AmbientLight(0x6680a6, 0.6));
@@ -231,7 +239,7 @@ function initViewer(){
   cube = new THREE.Mesh(geo, mat);
   scn.add(cube);
 
-  // 5) Render loop
+  // 7) Render loop
   animateViewer();
 }
 function animateViewer(){
@@ -241,10 +249,15 @@ function animateViewer(){
   r3d && scn && cam && r3d.render(scn, cam);
 }
 function resizeViewer(){
-  const w = viewerCanvas.clientWidth || viewerCanvas.parentElement.clientWidth;
-  const h = viewerCanvas.clientHeight || Math.max(280, Math.round(window.innerWidth * .56));
+  if (!r3d || !cam || !viewerCanvas) return;
+
+  const parent = viewerCanvas.parentElement || viewerCanvas;
+  const w = Math.max(1, parent.clientWidth || 1);
+  const h = Math.max(1, viewerCanvas.clientHeight || Math.round(window.innerWidth * 0.56) || 300);
+
   r3d.setSize(w, h, false);
-  cam.aspect = w/h; cam.updateProjectionMatrix();
+  cam.aspect = w / h;
+  cam.updateProjectionMatrix();
 }
 window.addEventListener('resize', resizeViewer);
 
@@ -260,8 +273,7 @@ function loadModel(url){
   }
 
   const loader = new GLTFLoader();
-  // Si el modelo referencia texturas por ruta relativa:
-  // loader.setResourcePath(url.substring(0, url.lastIndexOf('/') + 1));
+  // loader.setResourcePath(url.substring(0, url.lastIndexOf('/') + 1)); // si tu GLB referencia texturas relativas
 
   loader.load(
     url,
