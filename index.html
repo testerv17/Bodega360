@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bodega Inteligente 360° — Ultra Static</title>
-  <meta name="description" content="Catálogo mayorista con IA (Poe), videos e interfaz llamativa. 100% estático con JSON." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Bodega Inteligente 360° — Catálogo con IA</title>
+  <meta name="description" content="Catálogo mayorista con IA y visor 3D. 100% estático con JSON.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -22,27 +20,19 @@
   </header>
 
   <section class="hero">
-    <div class="hero-layer glow-1"></div>
-    <div class="hero-layer glow-2"></div>
     <div class="hero-content">
       <h1><span>Mayoristas</span> con impacto visual</h1>
-      <p>Explora nuestro catálogo con animaciones fluidas, tarjetas 3D y un asistente IA vía Poe.</p>
+      <p>Explora nuestro catálogo con animaciones 3D y un asistente IA integrado.</p>
       <div class="hero-cta">
         <button id="btnExplorar" class="btn btn-primary">Explorar catálogo</button>
-        <button id="btnOfertas" class="btn btn-ghost">Ofertas relámpago</button>
+        <button id="openPoe" class="btn btn-ghost">Abrir Chat IA 🤖</button>
       </div>
-    </div>
-    <div class="hero-showcase">
-      <div class="hero-card tilt"><img src="assets/products/hero1.jpg" alt="Destacado 1"></div>
-      <div class="hero-card tilt"><img src="assets/products/hero2.jpg" alt="Destacado 2"></div>
-      <div class="hero-card tilt"><img src="assets/products/hero3.jpg" alt="Destacado 3"></div>
     </div>
   </section>
 
   <main>
     <section class="search-section">
-      <input id="searchInput" type="text" placeholder="Ej: detergentes 5kg, papel higiénico jumbo..." />
-      <button id="voiceBtn" title="Buscar por voz" class="btn">🎤</button>
+      <input id="searchInput" type="text" placeholder="Buscar productos..." />
       <button id="searchBtn" class="btn btn-primary">Buscar</button>
     </section>
 
@@ -53,109 +43,57 @@
       </div>
       <div id="catalogGrid" class="catalog-grid"></div>
     </section>
-
-    <section id="videos" class="videos-section">
-      <div class="section-head">
-        <h2>Videos de producto</h2>
-      </div>
-      <div id="videosGrid" class="videos-grid"></div>
-    </section>
-
-    <section id="ai" class="ai-section">
-      <div class="ai-card">
-        <div class="ai-copy">
-          <h2>Asistente de Compras (IA)</h2>
-          <p>Consulta combos, entregas y precios al mayoreo. Se abre en Poe (pestaña nueva) y puedes hablar con el bot.</p>
-          <div class="ai-actions">
-            <button id="openPoe" class="btn btn-primary">Abrir chat en Poe</button>
-            <small class="muted">Configura la URL del bot en <code>data/config.json</code></small>
-          </div>
-        </div>
-        <div class="ai-visual neon"></div>
-      </div>
-    </section>
   </main>
 
   <footer class="footer">
-    <p>© 2025 Bodega Inteligente 360° — Ultra Static</p>
+    <p>© 2025 Bodega Inteligente 360° — Catálogo con IA</p>
   </footer>
-  <!-- Modal Detalle de Producto -->
-<div id="productModal" class="modal" aria-hidden="true">
-  <div class="modal__backdrop" id="modalBackdrop"></div>
-  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button class="modal__close" id="modalClose" aria-label="Cerrar">✕</button>
 
-    <div class="modal__header">
-      <h3 id="modalTitle" class="modal__title">Título del producto</h3>
-      <span class="modal__badge" id="modalBadge">OFERTA</span>
-    </div>
-
-    <div class="modal__content">
-      <div class="modal__media">
-        <!-- Visor 3D -->
-        <div class="viewer3d">
+  <!-- Modal de producto -->
+  <div id="productModal" class="modal" aria-hidden="true">
+    <div class="modal__backdrop" id="modalBackdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal__close" id="modalClose" aria-label="Cerrar">✕</button>
+      <div class="modal__header">
+        <h3 id="modalTitle" class="modal__title">Producto</h3>
+      </div>
+      <div class="modal__content">
+        <div class="modal__media">
           <canvas id="viewerCanvas"></canvas>
           <div class="viewer3d__overlay" id="viewerOverlay">Cargando 3D…</div>
-          <div class="viewer3d__actions">
-            <button id="btnResetCam">Reset cámara</button>
-            <button id="btnFullscreen">Pantalla completa</button>
-          </div>
         </div>
-
-        <!-- Galería de imágenes (opcional) -->
-        <div class="gallery" id="modalGallery"></div>
-      </div>
-
-      <div class="modal__info">
-        <div class="price" id="modalPrice">$0.00</div>
-        <p class="desc" id="modalDesc">
-          Descripción…
-        </p>
-
-        <div class="specs" id="modalSpecs">
-          <!-- Aquí puedes inyectar especificaciones si las agregas al JSON -->
+        <div class="modal__info">
+          <div class="price" id="modalPrice">$0.00</div>
+          <p class="desc" id="modalDesc"></p>
+          <div class="specs" id="modalSpecs"></div>
         </div>
-
-        <div class="chips" id="modalChips"></div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ========= Modal Chat IA (EMBEBIDO) ========= -->
-<div id="chatModal" class="modal" aria-hidden="true">
-  <div class="modal__backdrop" id="chatBackdrop"></div>
-  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
-    <button class="modal__close" id="chatClose" aria-label="Cerrar">✕</button>
-    <div class="modal__header">
-      <h3 id="chatTitle" class="modal__title">Asistente de Compras (IA)</h3>
-    </div>
-    <div class="modal__content" style="display:grid; grid-template-columns:1fr; gap:12px;">
-      <div id="chatLog" style="height:380px; overflow:auto; padding:10px; border:1px solid #1b2a42; border-radius:12px; background:#0b111b;"></div>
-      <form id="chatForm" style="display:flex; gap:8px;">
-        <input id="chatInput" type="text" placeholder="Pregúntame combos, entregas, mayoreo…" style="flex:1; padding:12px; border-radius:10px; border:1px solid #1b2a42; background:#0e1420; color:#e7ecf3;">
-        <button class="btn btn-primary" type="submit">Enviar</button>
-      </form>
-      <small class="muted">Motor IA vía Cloudflare Worker. Tus claves no se exponen en el navegador.</small>
+  <!-- Chat Modal -->
+  <div id="chatModal" class="modal" aria-hidden="true">
+    <div class="modal__backdrop" id="chatBackdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
+      <button class="modal__close" id="chatClose" aria-label="Cerrar">✕</button>
+      <div class="modal__header">
+        <h3 id="chatTitle">Asistente de Compras IA 🤖</h3>
+      </div>
+      <div class="modal__content">
+        <div id="chatLog" class="chat-log"></div>
+        <form id="chatForm" class="chat-form">
+          <input id="chatInput" type="text" placeholder="Escribe tu pregunta..." autocomplete="off" />
+          <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ========= Import map para ThreeJS (ESM) ========= -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
-  }
-}
-</script>
-
-<!-- ========= Tu app como módulo ========= -->
-<script type="module" src="./app.js"></script>
-
-
-
-
+  <!-- Three.js libs -->
+  <script src="https://unpkg.com/three@0.161.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.161.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://unpkg.com/three@0.161.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
+
