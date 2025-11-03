@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bodega Inteligente 360° — Ultra Static</title>
+  <meta name="description" content="Catálogo mayorista con IA (Poe), videos e interfaz llamativa. 100% estático con JSON." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">Bodega <span>360°</span></div>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">☰</button>
+    <nav id="navMenu" class="nav">
+      <a href="#catalogo">Catálogo</a>
+      <a href="#videos">Videos</a>
+      <a href="#ai">Asistente IA</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-layer glow-1"></div>
+    <div class="hero-layer glow-2"></div>
+    <div class="hero-content">
+      <h1><span>Mayoristas</span> con impacto visual</h1>
+      <p>Explora nuestro catálogo con animaciones fluidas, tarjetas 3D y un asistente IA vía Poe.</p>
+      <div class="hero-cta">
+        <button id="btnExplorar" class="btn btn-primary">Explorar catálogo</button>
+        <button id="btnOfertas" class="btn btn-ghost">Ofertas relámpago</button>
+      </div>
+    </div>
+    <div class="hero-showcase">
+      <div class="hero-card tilt"><img src="assets/products/hero1.jpg" alt="Destacado 1"></div>
+      <div class="hero-card tilt"><img src="assets/products/hero2.jpg" alt="Destacado 2"></div>
+      <div class="hero-card tilt"><img src="assets/products/hero3.jpg" alt="Destacado 3"></div>
+    </div>
+  </section>
+
+  <main>
+    <section class="search-section">
+      <input id="searchInput" type="text" placeholder="Ej: detergentes 5kg, papel higiénico jumbo..." />
+      <button id="voiceBtn" title="Buscar por voz" class="btn">🎤</button>
+      <button id="searchBtn" class="btn btn-primary">Buscar</button>
+    </section>
+
+    <section id="catalogo" class="catalog-section">
+      <div class="section-head">
+        <h2>Catálogo</h2>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div id="catalogGrid" class="catalog-grid"></div>
+    </section>
+
+    <section id="videos" class="videos-section">
+      <div class="section-head">
+        <h2>Videos de producto</h2>
+      </div>
+      <div id="videosGrid" class="videos-grid"></div>
+    </section>
+
+    <section id="ai" class="ai-section">
+      <div class="ai-card">
+        <div class="ai-copy">
+          <h2>Asistente de Compras (IA)</h2>
+          <p>Consulta combos, entregas y precios al mayoreo. Se abre en Poe (pestaña nueva) y puedes hablar con el bot.</p>
+          <div class="ai-actions">
+            <button id="openPoe" class="btn btn-primary">Abrir chat en Poe</button>
+            <small class="muted">Configura la URL del bot en <code>data/config.json</code></small>
+          </div>
+        </div>
+        <div class="ai-visual neon"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 Bodega Inteligente 360° — Ultra Static</p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

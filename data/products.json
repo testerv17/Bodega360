@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Platos",
+    "price": 189,
+    "img": "assets/products/plato.jpg",
+    "onSale": true,
+    "category": "Limpieza",
+    "keywords": ["platos", "plato", "vajilla", "descartable", "limpieza", "mayoreo"]
+  },
+  {
+    "title": "Papel Higiénico Jumbo 12p",
+    "price": 259,
+    "img": "assets/products/pplh.jpg",
+    "onSale": false,
+    "category": "Higiene",
+    "keywords": ["papel", "higiene", "jumbo", "sanitario"]
+  },
+  {
+    "title": "Cloro Profesional 4L",
+    "price": 99,
+    "img": "assets/products/cloro4.jpg",
+    "onSale": true,
+    "category": "Limpieza",
+    "keywords": ["cloro", "limpieza", "4l", "mayoreo"]
+  },
+  {
+    "title": "Servilletas Premium 600h",
+    "price": 115,
+    "img": "assets/products/servi600.jpg",
+    "onSale": false,
+    "category": "Higiene",
+    "keywords": ["servilletas", "premium", "hosteleria"]
+  },
+  {
+    "title": "Jabón Líquido Manos 1L",
+    "price": 79,
+    "img": "assets/products/jabon.jpg",
+    "onSale": false,
+    "category": "Higiene",
+    "keywords": ["jabon", "manos", "1l"]
+  },
+  {
+    "title": "Desengrasante Cocina 1L",
+    "price": 129,
+    "img": "assets/products/deseng1.jpg",
+    "onSale": true,
+    "category": "Limpieza",
+    "keywords": ["desengrasante", "cocina", "limpieza"]
+  },
+  {
+    "title": "Toalla Interdoblada 250h",
+    "price": 98,
+    "img": "assets/products/toalla250.jpg",
+    "onSale": false,
+    "category": "Higiene",
+    "keywords": ["toalla", "interdoblada", "papel"]
+  },
+  {
+    "title": "Suavizante Textil 5L",
+    "price": 169,
+    "img": "assets/products/suav5.jpg",
+    "onSale": true,
+    "category": "Limpieza",
+    "keywords": ["suavizante", "textil", "5l"]
+  },
+  {
+    "title": "Guantes Nitrilo (Caja 100)",
+    "price": 219,
+    "img": "assets/products/guantes.jpg",
+    "onSale": false,
+    "category": "Seguridad",
+    "keywords": ["guantes", "nitrilo", "seguridad"]
+  },
+  {
+    "title": "Cubrebocas 3 Capas (50p)",
+    "price": 59,
+    "img": "assets/products/cubre50.jpg",
+    "onSale": true,
+    "category": "Seguridad",
+    "keywords": ["cubrebocas", "mascarilla", "seguridad"]
+  }
+]
