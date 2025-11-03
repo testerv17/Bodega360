@@ -199,7 +199,7 @@ document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.class
 
 function initViewer(){
   if(r3d){ resizeViewer(); return; }
-  r3d = new THREE.WebGLRenderer({canvas: viewerCanvas, antialias:true});
+ ctl = new OrbitControls(cam, r3d.domElement);
   resizeViewer();
 
   scn = new THREE.Scene();
@@ -247,7 +247,7 @@ function loadModel(url){
   }
 
   try{
-    const loader = new THREE.GLTFLoader();
+const loader = new GLTFLoader();
     // importante para hosts externos
     if (loader.setCrossOrigin) loader.setCrossOrigin('anonymous'); 
     // si tu GLB trae texturas relativas externas, ayuda a resolverlas:
