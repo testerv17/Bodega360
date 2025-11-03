@@ -79,6 +79,54 @@
   <footer class="footer">
     <p>© 2025 Bodega Inteligente 360° — Ultra Static</p>
   </footer>
+  <!-- Modal Detalle de Producto -->
+<div id="productModal" class="modal" aria-hidden="true">
+  <div class="modal__backdrop" id="modalBackdrop"></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal__close" id="modalClose" aria-label="Cerrar">✕</button>
+
+    <div class="modal__header">
+      <h3 id="modalTitle" class="modal__title">Título del producto</h3>
+      <span class="modal__badge" id="modalBadge">OFERTA</span>
+    </div>
+
+    <div class="modal__content">
+      <div class="modal__media">
+        <!-- Visor 3D -->
+        <div class="viewer3d">
+          <canvas id="viewerCanvas"></canvas>
+          <div class="viewer3d__overlay" id="viewerOverlay">Cargando 3D…</div>
+          <div class="viewer3d__actions">
+            <button id="btnResetCam">Reset cámara</button>
+            <button id="btnFullscreen">Pantalla completa</button>
+          </div>
+        </div>
+
+        <!-- Galería de imágenes (opcional) -->
+        <div class="gallery" id="modalGallery"></div>
+      </div>
+
+      <div class="modal__info">
+        <div class="price" id="modalPrice">$0.00</div>
+        <p class="desc" id="modalDesc">
+          Descripción…
+        </p>
+
+        <div class="specs" id="modalSpecs">
+          <!-- Aquí puedes inyectar especificaciones si las agregas al JSON -->
+        </div>
+
+        <div class="chips" id="modalChips"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Three.js + OrbitControls + GLTFLoader -->
+<script src="https://unpkg.com/three@0.161.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.161.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://unpkg.com/three@0.161.0/examples/js/loaders/GLTFLoader.js"></script>
+
 
   <script type="module" src="app.js"></script>
 </body>
