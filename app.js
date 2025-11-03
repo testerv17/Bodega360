@@ -285,7 +285,7 @@ btnFullscreen.addEventListener('click', ()=>{
   else { viewerCanvas.requestFullscreen?.(); }
 });
 
-// ================== CHAT IA EMBEBIDO ==================
+// ================== CHAT IA EMBEBIDO (HUGGING FACE vía Worker) ==================
 const chatModal = document.getElementById('chatModal');
 const chatBackdrop = document.getElementById('chatBackdrop');
 const chatClose = document.getElementById('chatClose');
@@ -338,12 +338,18 @@ chatForm.addEventListener('submit', async (e)=>{
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ messages: [...chatMessages, { role:'user', content:q }] })
     });
+
+    const text = await resp.text();
+    let data = null; try { data = JSON.parse(text); } catch {}
+
     if(!resp.ok){
-      appendBubble('Error del servidor. Intenta más tarde.', 'ai');
+      console.error('Chat error →', text);
+      const m = data?.error?.error?.message || data?.error || 'Servidor ocupado. Intenta de nuevo.';
+      appendBubble(m, 'ai');
       return;
     }
-    const data = await resp.json();
-    const answer = data?.reply || 'No tengo respuesta por ahora.';
+
+    const answer = data?.reply || '…';
     chatMessages.push({ role:'user', content:q }, { role:'assistant', content:answer });
     appendBubble(answer, 'ai');
   }catch(err){
@@ -354,4 +360,3 @@ chatForm.addEventListener('submit', async (e)=>{
 
 // ================== INIT ==================
 loadProducts();
-
