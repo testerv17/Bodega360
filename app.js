@@ -1,10 +1,7 @@
-// --- IMPORTS ESM ---
-import * as THREE from 'https://unpkg.com/three@0.161.0/build/three.module.js';
-import { OrbitControls } from 'https://unpkg.com/three@0.161.0/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'https://unpkg.com/three@0.161.0/examples/jsm/loaders/GLTFLoader.js';
-
-
-
+// --- IMPORTS (ESM) ---
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // ================== NAV / HAMBURGER ==================
 const hamburger = document.getElementById('hamburger');
@@ -44,6 +41,10 @@ let PRODUCTS = [];
 
 async function loadProducts(){
   const res = await fetch('./data/products.json?ts=' + Date.now());
+  if (!res.ok) {
+    console.error('No se pudo cargar data/products.json', res.status);
+    return;
+  }
   PRODUCTS = await res.json();
   renderChips();
   renderProducts(PRODUCTS);
@@ -198,27 +199,39 @@ modalBackdrop.addEventListener('click', closeProductModal);
 document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('is-open')) closeProductModal(); });
 
 function initViewer(){
-  if(r3d){ resizeViewer(); return; }
- ctl = new OrbitControls(cam, r3d.domElement);
+  if (r3d) { resizeViewer(); return; }
+
+  // 1) Renderer
+  r3d = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias: true });
   resizeViewer();
 
+  // 2) Scene + Camera
   scn = new THREE.Scene();
   scn.background = new THREE.Color(0x0b1018);
 
-  cam = new THREE.PerspectiveCamera(60, viewerCanvas.clientWidth/viewerCanvas.clientHeight, 0.1, 100);
+  cam = new THREE.PerspectiveCamera(
+    60,
+    viewerCanvas.clientWidth / viewerCanvas.clientHeight,
+    0.1,
+    100
+  );
   cam.position.set(2.5, 2, 3.5);
 
-  ctl = new THREE.OrbitControls(cam, r3d.domElement);
+  // 3) Controles
+  ctl = new OrbitControls(cam, r3d.domElement);
   ctl.enableDamping = true;
 
-  const light = new THREE.DirectionalLight(0xffffff, 1.2); light.position.set(5,5,5);
-  scn.add(light, new THREE.AmbientLight(0x6680a6, .6));
+  // 4) Luces + placeholder
+  const key = new THREE.DirectionalLight(0xffffff, 1.2);
+  key.position.set(5, 5, 5);
+  scn.add(key, new THREE.AmbientLight(0x6680a6, 0.6));
 
   const geo = new THREE.BoxGeometry(1,1,1);
-  const mat = new THREE.MeshStandardMaterial({color:0x36a3ff, metalness:.2, roughness:.4});
+  const mat = new THREE.MeshStandardMaterial({ color: 0x36a3ff, metalness: 0.2, roughness: 0.4 });
   cube = new THREE.Mesh(geo, mat);
   scn.add(cube);
 
+  // 5) Render loop
   animateViewer();
 }
 function animateViewer(){
@@ -246,41 +259,30 @@ function loadModel(url){
     return;
   }
 
-  try{
-const loader = new GLTFLoader();
-    // importante para hosts externos
-    if (loader.setCrossOrigin) loader.setCrossOrigin('anonymous'); 
-    // si tu GLB trae texturas relativas externas, ayuda a resolverlas:
-    // loader.setResourcePath(url.substring(0, url.lastIndexOf('/') + 1));
+  const loader = new GLTFLoader();
+  // Si el modelo referencia texturas por ruta relativa:
+  // loader.setResourcePath(url.substring(0, url.lastIndexOf('/') + 1));
 
-    loader.load(
-      url,
-      (gltf)=>{
-        currentGltf = gltf.scene;
-        currentGltf.traverse(n=>{ if(n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
-        scn.add(currentGltf);
-        cube.visible = false;
-        cam.position.set(2.5, 2, 3.5);
-        ctl.target.set(0, 0.6, 0); ctl.update();
-        viewerOverlay.style.display = 'none';
-      },
-      (ev)=>{
-        // opcional: progreso
-        // console.log(`Cargando ${url}: ${((ev.loaded/ev.total)*100||0).toFixed(0)}%`);
-      },
-      (err)=>{
-        console.error('GLTF error:', err);
-        cube.visible = true;
-        viewerOverlay.textContent = 'No se pudo cargar el modelo 3D.';
-        setTimeout(()=> viewerOverlay.style.display = 'none', 1600);
-      }
-    );
-  }catch(e){
-    console.error('GLTF exception:', e);
-    cube.visible = true;
-    viewerOverlay.textContent = 'Error cargando 3D.';
-    setTimeout(()=> viewerOverlay.style.display = 'none', 1600);
-  }
+  loader.load(
+    url,
+    (gltf)=>{
+      currentGltf = gltf.scene;
+      currentGltf.traverse(n=>{ if(n.isMesh){ n.castShadow = n.receiveShadow = true; } });
+      scn.add(currentGltf);
+      cube.visible = false;
+      cam.position.set(2.5, 2, 3.5);
+      ctl.target.set(0, 0.6, 0);
+      ctl.update();
+      viewerOverlay.style.display = 'none';
+    },
+    undefined,
+    (err)=>{
+      console.error('GLTF error:', err);
+      cube.visible = true;
+      viewerOverlay.textContent = 'No se pudo cargar el modelo 3D.';
+      setTimeout(()=> viewerOverlay.style.display = 'none', 1600);
+    }
+  );
 }
 
 btnResetCam.addEventListener('click', ()=>{
@@ -294,4 +296,3 @@ btnFullscreen.addEventListener('click', ()=>{
 
 // ================== INIT ==================
 loadProducts();
-
