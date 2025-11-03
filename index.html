@@ -122,6 +122,26 @@
   </div>
 </div>
 
+<!-- ========= Modal Chat IA (EMBEBIDO) ========= -->
+<div id="chatModal" class="modal" aria-hidden="true">
+  <div class="modal__backdrop" id="chatBackdrop"></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
+    <button class="modal__close" id="chatClose" aria-label="Cerrar">✕</button>
+    <div class="modal__header">
+      <h3 id="chatTitle" class="modal__title">Asistente de Compras (IA)</h3>
+    </div>
+    <div class="modal__content" style="display:grid; grid-template-columns:1fr; gap:12px;">
+      <div id="chatLog" style="height:380px; overflow:auto; padding:10px; border:1px solid #1b2a42; border-radius:12px; background:#0b111b;"></div>
+      <form id="chatForm" style="display:flex; gap:8px;">
+        <input id="chatInput" type="text" placeholder="Pregúntame combos, entregas, mayoreo…" style="flex:1; padding:12px; border-radius:10px; border:1px solid #1b2a42; background:#0e1420; color:#e7ecf3;">
+        <button class="btn btn-primary" type="submit">Enviar</button>
+      </form>
+      <small class="muted">Motor IA vía Cloudflare Worker. Tus claves no se exponen en el navegador.</small>
+    </div>
+  </div>
+</div>
+
+<!-- ========= Import map para ThreeJS (ESM) ========= -->
 <script type="importmap">
 {
   "imports": {
@@ -131,8 +151,9 @@
 }
 </script>
 
-<!-- Tu app en modo módulo -->
+<!-- ========= Tu app como módulo ========= -->
 <script type="module" src="./app.js"></script>
+
 
 
 
