@@ -238,21 +238,41 @@ function loadModel(url){
     return;
   }
 
-  const loader = new THREE.GLTFLoader();
-  loader.load(url, (gltf)=>{
-    currentGltf = gltf.scene;
-    currentGltf.traverse(n=>{ if(n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
-    scn.add(currentGltf);
-    cube.visible = false;
-    cam.position.set(2.5, 2, 3.5);
-    ctl.target.set(0, 0.6, 0); ctl.update();
-    viewerOverlay.style.display = 'none';
-  }, undefined, (err)=>{
-    console.error('GLTF error', err);
+  try{
+    const loader = new THREE.GLTFLoader();
+    // importante para hosts externos
+    if (loader.setCrossOrigin) loader.setCrossOrigin('anonymous'); 
+    // si tu GLB trae texturas relativas externas, ayuda a resolverlas:
+    // loader.setResourcePath(url.substring(0, url.lastIndexOf('/') + 1));
+
+    loader.load(
+      url,
+      (gltf)=>{
+        currentGltf = gltf.scene;
+        currentGltf.traverse(n=>{ if(n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+        scn.add(currentGltf);
+        cube.visible = false;
+        cam.position.set(2.5, 2, 3.5);
+        ctl.target.set(0, 0.6, 0); ctl.update();
+        viewerOverlay.style.display = 'none';
+      },
+      (ev)=>{
+        // opcional: progreso
+        // console.log(`Cargando ${url}: ${((ev.loaded/ev.total)*100||0).toFixed(0)}%`);
+      },
+      (err)=>{
+        console.error('GLTF error:', err);
+        cube.visible = true;
+        viewerOverlay.textContent = 'No se pudo cargar el modelo 3D.';
+        setTimeout(()=> viewerOverlay.style.display = 'none', 1600);
+      }
+    );
+  }catch(e){
+    console.error('GLTF exception:', e);
     cube.visible = true;
-    viewerOverlay.textContent = 'No se pudo cargar el modelo 3D.';
+    viewerOverlay.textContent = 'Error cargando 3D.';
     setTimeout(()=> viewerOverlay.style.display = 'none', 1600);
-  });
+  }
 }
 
 btnResetCam.addEventListener('click', ()=>{
