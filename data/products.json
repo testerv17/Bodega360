@@ -1,11 +1,15 @@
 [
   {
-    "title": "Platos",
+    "title": "Platos Descartables Premium (100 pzas)",
     "price": 189,
     "img": "assets/products/plato.jpg",
     "onSale": true,
-    "category": "Limpieza",
-    "keywords": ["platos", "plato", "vajilla", "descartable", "limpieza", "mayoreo"]
+    "category": "Higiene",
+    "keywords": ["platos", "plato", "vajilla", "descartable", "hostelería", "mayoreo"],
+    "description": "Platos resistentes de 22 cm, ideales para servicio de alimentos en eventos y comedores. Paquete de 100 piezas.",
+    "modelUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
+    "images": ["assets/products/plato.jpg"],
+    "specs": { "Diámetro": "22 cm", "Material": "PP", "Color": "Blanco", "Paquete": "100 pzas" }
   },
   {
     "title": "Papel Higiénico Jumbo 12p",
@@ -13,7 +17,11 @@
     "img": "assets/products/pplh.jpg",
     "onSale": false,
     "category": "Higiene",
-    "keywords": ["papel", "higiene", "jumbo", "sanitario"]
+    "keywords": ["papel", "higiénico", "jumbo", "sanitario", "rollo"],
+    "description": "Rollo jumbo doble hoja, alto rendimiento para baños de alto flujo. Caja con 12 piezas.",
+    "modelUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb",
+    "images": ["assets/products/pplh.jpg"],
+    "specs": { "Hoja": "Doble", "Diámetro": "9\"", "Metraje": "250 m", "Caja": "12 rollos" }
   },
   {
     "title": "Cloro Profesional 4L",
@@ -21,7 +29,11 @@
     "img": "assets/products/cloro4.jpg",
     "onSale": true,
     "category": "Limpieza",
-    "keywords": ["cloro", "limpieza", "4l", "mayoreo"]
+    "keywords": ["cloro", "desinfección", "sanitizante", "blanqueador"],
+    "description": "Desinfectante concentrado de uso institucional, eficaz contra bacterias y virus. Presentación garrafa de 4 L.",
+    "modelUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb",
+    "images": ["assets/products/cloro4.jpg"],
+    "specs": { "Contenido": "4 L", "Concentración": "5%", "Aroma": "Clásico", "Uso": "Institucional" }
   },
   {
     "title": "Servilletas Premium 600h",
@@ -29,15 +41,23 @@
     "img": "assets/products/servi600.jpg",
     "onSale": false,
     "category": "Higiene",
-    "keywords": ["servilletas", "premium", "hosteleria"]
+    "keywords": ["servilletas", "premium", "hostelería", "mesa"],
+    "description": "Servilleta de alta absorción y suavidad para restaurantes y comedores. 600 hojas por paquete.",
+    "modelUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb",
+    "images": ["assets/products/servi600.jpg"],
+    "specs": { "Hojas": "600", "Medida": "20x20 cm", "Color": "Blanco", "Textura": "Gofrada" }
   },
   {
-    "title": "Jabón Líquido Manos 1L",
+    "title": "Jabón Líquido para Manos 1L",
     "price": 79,
     "img": "assets/products/jabon.jpg",
     "onSale": false,
     "category": "Higiene",
-    "keywords": ["jabon", "manos", "1l"]
+    "keywords": ["jabón", "manos", "antibacterial", "dispensador"],
+    "description": "Jabón suave con agentes humectantes, apto para dispensadores. Ideal para oficinas y comercios.",
+    "modelUrl": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "images": ["assets/products/jabon.jpg"],
+    "specs": { "Contenido": "1 L", "pH": "Neutro", "Fragancia": "Suave", "Uso": "Diario" }
   },
   {
     "title": "Desengrasante Cocina 1L",
@@ -45,7 +65,11 @@
     "img": "assets/products/deseng1.jpg",
     "onSale": true,
     "category": "Limpieza",
-    "keywords": ["desengrasante", "cocina", "limpieza"]
+    "keywords": ["desengrasante", "cocina", "desincrustante", "grasa"],
+    "description": "Fórmula poderosa para eliminar grasa en hornillas, campanas y superficies de acero inoxidable.",
+    "modelUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/TextureSettingsTest/glTF-Binary/TextureSettingsTest.glb",
+    "images": ["assets/products/deseng1.jpg"],
+    "specs": { "Contenido": "1 L", "Tipo": "Alcalino", "Aplicación": "Directa", "Superficies": "Metal/cerámica" }
   },
   {
     "title": "Toalla Interdoblada 250h",
@@ -53,7 +77,11 @@
     "img": "assets/products/toalla250.jpg",
     "onSale": false,
     "category": "Higiene",
-    "keywords": ["toalla", "interdoblada", "papel"]
+    "keywords": ["toalla", "interdoblada", "dispensador", "papel"],
+    "description": "Toalla interdoblada compatible con la mayoría de dispensadores. Excelente absorción.",
+    "modelUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
+    "images": ["assets/products/toalla250.jpg"],
+    "specs": { "Hojas": "250", "Formato": "Z", "Color": "Blanco", "Gramaje": "34 g/m²" }
   },
   {
     "title": "Suavizante Textil 5L",
@@ -61,7 +89,11 @@
     "img": "assets/products/suav5.jpg",
     "onSale": true,
     "category": "Limpieza",
-    "keywords": ["suavizante", "textil", "5l"]
+    "keywords": ["suavizante", "textil", "ropa", "lavandería"],
+    "description": "Suaviza fibras y deja aroma duradero. Ideal para hoteles y lavanderías.",
+    "modelUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb",
+    "images": ["assets/products/suav5.jpg"],
+    "specs": { "Contenido": "5 L", "Fragancia": "Fresca", "Acción": "Antiestática", "Rendimiento": "Alto" }
   },
   {
     "title": "Guantes Nitrilo (Caja 100)",
@@ -69,7 +101,11 @@
     "img": "assets/products/guantes.jpg",
     "onSale": false,
     "category": "Seguridad",
-    "keywords": ["guantes", "nitrilo", "seguridad"]
+    "keywords": ["guantes", "nitrilo", "protección", "descartables"],
+    "description": "Resistentes y cómodos, sin látex. Ideales para manipulación de alimentos y limpieza.",
+    "modelUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+    "images": ["assets/products/guantes.jpg"],
+    "specs": { "Tallas": "S/M/L", "Material": "Nitrilo", "Caja": "100 pzas", "Color": "Azul" }
   },
   {
     "title": "Cubrebocas 3 Capas (50p)",
@@ -77,6 +113,11 @@
     "img": "assets/products/cubre50.jpg",
     "onSale": true,
     "category": "Seguridad",
-    "keywords": ["cubrebocas", "mascarilla", "seguridad"]
+    "keywords": ["cubrebocas", "mascarilla", "3 capas", "protección"],
+    "description": "Mascarilla de 3 capas con puente nasal ajustable. Caja con 50 piezas.",
+    "modelUrl": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BarramundiFish/glTF-Binary/BarramundiFish.glb",
+    "images": ["assets/products/cubre50.jpg"],
+    "specs": { "Capas": "3", "Tipo": "Desechable", "Caja": "50 pzas", "Color": "Azul" }
   }
 ]
+
