@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bodega 360 — Catálogo con 3D</title>
-  <meta name="description" content="Catálogo mayorista con visor 3D y asistente IA.">
+  <title>Bodega 360 — Catálogo 3D</title>
+  <meta name="description" content="Catálogo mayorista con visor 3D. 100% estático con JSON.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -15,7 +15,6 @@
     <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">☰</button>
     <nav id="navMenu" class="nav">
       <a href="#catalogo">Catálogo</a>
-      <a href="#ai">Asistente</a>
     </nav>
   </header>
 
@@ -23,10 +22,9 @@
   <section class="hero">
     <div class="hero-content">
       <h1><span>Mayoristas</span> con impacto visual</h1>
-      <p>Explora nuestro catálogo con tarjetas 3D y visor de modelos en tiempo real.</p>
+      <p>Explora nuestro catálogo con tarjetas y visor de modelos 3D.</p>
       <div class="hero-cta">
-        <button id="btnExplorar" class="btn btn-primary" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button>
-        <button id="openPoe" class="btn btn-ghost">Abrir Chat IA</button>
+        <button class="btn btn-primary" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button>
       </div>
     </div>
     <div class="hero-showcase">
@@ -54,17 +52,17 @@
   </main>
 
   <footer class="footer">
-    <p>© 2025 Bodega 360 — Catálogo</p>
+    <p>© 2025 Bodega 360 — Catálogo 3D</p>
   </footer>
 
-  <!-- ========== Modal Detalle de Producto (con visor 3D) ========== -->
+  <!-- ===== Modal Detalle de Producto (con visor 3D) ===== -->
   <div id="productModal" class="modal" aria-hidden="true">
     <div class="modal__backdrop" id="modalBackdrop"></div>
     <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <button class="modal__close" id="modalClose" aria-label="Cerrar">✕</button>
 
       <div class="modal__header">
-        <h3 id="modalTitle" class="modal__title">Título del producto</h3>
+        <h3 id="modalTitle" class="modal__title">Producto</h3>
       </div>
 
       <div class="modal__content">
@@ -73,6 +71,10 @@
           <div class="viewer3d">
             <canvas id="viewerCanvas"></canvas>
             <div class="viewer3d__overlay" id="viewerOverlay">Cargando 3D…</div>
+            <div class="viewer3d__actions">
+              <button id="btnResetCam" class="btn">Reset cámara</button>
+              <button id="btnFullscreen" class="btn">Pantalla completa</button>
+            </div>
           </div>
         </div>
 
@@ -85,31 +87,14 @@
     </div>
   </div>
 
-  <!-- ========== Modal Chat IA (opcional; tu app.js lo usa) ========== -->
-  <div id="chatModal" class="modal" aria-hidden="true">
-    <div class="modal__backdrop" id="chatBackdrop"></div>
-    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
-      <button class="modal__close" id="chatClose" aria-label="Cerrar">✕</button>
-      <div class="modal__header">
-        <h3 id="chatTitle">Asistente de Compras IA 🤖</h3>
-      </div>
-      <div class="modal__content">
-        <div id="chatLog" class="chat-log"></div>
-        <form id="chatForm" class="chat-form">
-          <input id="chatInput" type="text" placeholder="Escribe tu pregunta..." autocomplete="off" />
-          <button type="submit" class="btn btn-primary">Enviar</button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== LIBRERÍAS Three.js (globales) ========== -->
+  <!-- ===== Three.js (global) ===== -->
   <script src="https://unpkg.com/three@0.161.0/build/three.min.js"></script>
   <script src="https://unpkg.com/three@0.161.0/examples/js/controls/OrbitControls.js"></script>
   <script src="https://unpkg.com/three@0.161.0/examples/js/loaders/GLTFLoader.js"></script>
 
-  <!-- ========== Tu App (SIN type="module") ========== -->
+  <!-- ===== Tu App (SIN type="module") ===== -->
   <script src="./app.js"></script>
 </body>
 </html>
+
 
