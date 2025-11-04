@@ -87,7 +87,6 @@ searchBtn.addEventListener('click', ()=>{
 });
 
 // ================== MODAL + VISOR 3D ==================
-// ================== MODAL + VISOR 3D ==================
 const modal = document.getElementById('productModal');
 const modalClose = document.getElementById('modalClose');
 const modalBackdrop = document.getElementById('modalBackdrop');
@@ -104,29 +103,7 @@ const btnFullscreen = document.getElementById('btnFullscreen');
 
 let r3d = null, scn = null, cam = null, ctl = null, cube = null, currentGltf = null;
 
-// Carga segura de Three + addons si aún no están
-function ensureThree() {
-  return new Promise((resolve, reject) => {
-    if (window.THREE && THREE.OrbitControls && THREE.GLTFLoader) return resolve();
-    const urls = [
-      'https://unpkg.com/three@0.161.0/build/three.min.js',
-      'https://unpkg.com/three@0.161.0/examples/js/controls/OrbitControls.js',
-      'https://unpkg.com/three@0.161.0/examples/js/loaders/GLTFLoader.js'
-    ];
-    let i = 0;
-    const loadNext = () => {
-      if (i >= urls.length) return resolve();
-      const s = document.createElement('script');
-      s.src = urls[i++];
-      s.onload = loadNext;
-      s.onerror = () => reject(new Error('No se pudo cargar: ' + s.src));
-      document.head.appendChild(s);
-    };
-    loadNext();
-  });
-}
-
-async function openProductModal(p){
+function openProductModal(p){
   elTitle.textContent = p.title;
   elPrice.textContent = '$' + Number(p.price).toLocaleString();
   elDesc.textContent  = p.description || 'Producto disponible para mayoreo.';
@@ -135,7 +112,8 @@ async function openProductModal(p){
     const frag = document.createElement('div');
     Object.entries(p.specs).forEach(([k,v])=>{
       const row = document.createElement('div');
-      row.style.display='flex'; row.style.justifyContent='space-between'; row.style.gap='8px'; row.style.fontSize='14px';
+      row.style.display='flex'; row.style.justifyContent='space-between';
+      row.style.gap='8px'; row.style.fontSize='14px';
       row.innerHTML = `<span style="color:#9fb0c9">${k}</span><strong>${v}</strong>`;
       frag.appendChild(row);
     });
@@ -145,15 +123,9 @@ async function openProductModal(p){
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden','false');
 
-  try {
-    await ensureThree();
-    initViewer();
-    loadModel(p.modelUrl);
-    setTimeout(safeResizeViewer, 0);
-  } catch (e) {
-    console.error(e);
-    viewerOverlay.textContent = 'Error cargando Three.js';
-  }
+  initViewer();
+  loadModel(p.modelUrl);
+  setTimeout(safeResizeViewer, 100);
 }
 
 function closeProductModal(){
@@ -166,6 +138,13 @@ document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.class
 
 function initViewer(){
   if (r3d && scn && cam) return;
+
+  // Verificar que Three esté cargado
+  if (typeof THREE === 'undefined') {
+    console.error('THREE.js no está cargado.');
+    viewerOverlay.textContent = 'Error cargando Three.js';
+    return;
+  }
 
   r3d = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias: true });
 
@@ -180,9 +159,9 @@ function initViewer(){
   ctl = new THREE.OrbitControls(cam, r3d.domElement);
   ctl.enableDamping = true;
 
-  const key = new THREE.DirectionalLight(0xffffff, 1.2);
-  key.position.set(5,5,5);
-  scn.add(key, new THREE.AmbientLight(0x6680a6, 0.6));
+  const light = new THREE.DirectionalLight(0xffffff, 1.2);
+  light.position.set(5,5,5);
+  scn.add(light, new THREE.AmbientLight(0x6680a6, 0.6));
 
   cube = new THREE.Mesh(
     new THREE.BoxGeometry(1,1,1),
@@ -255,6 +234,6 @@ btnFullscreen.addEventListener('click', ()=>{
   else viewerCanvas.requestFullscreen?.();
 });
 
-
 // ================== INIT ==================
 loadProducts();
+
