@@ -3,39 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bodega Inteligente 360° — Catálogo con IA</title>
-  <meta name="description" content="Catálogo mayorista con IA y visor 3D. 100% estático con JSON.">
+  <title>Bodega 360 — Catálogo con 3D</title>
+  <meta name="description" content="Catálogo mayorista con visor 3D y asistente IA.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Topbar -->
   <header class="topbar">
     <div class="logo">Bodega <span>360°</span></div>
     <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">☰</button>
     <nav id="navMenu" class="nav">
       <a href="#catalogo">Catálogo</a>
-      <a href="#videos">Videos</a>
-      <a href="#ai">Asistente IA</a>
+      <a href="#ai">Asistente</a>
     </nav>
   </header>
 
+  <!-- Hero -->
   <section class="hero">
     <div class="hero-content">
       <h1><span>Mayoristas</span> con impacto visual</h1>
-      <p>Explora nuestro catálogo con animaciones 3D y un asistente IA integrado.</p>
+      <p>Explora nuestro catálogo con tarjetas 3D y visor de modelos en tiempo real.</p>
       <div class="hero-cta">
-        <button id="btnExplorar" class="btn btn-primary">Explorar catálogo</button>
-        <button id="openPoe" class="btn btn-ghost">Abrir Chat IA 🤖</button>
+        <button id="btnExplorar" class="btn btn-primary" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button>
+        <button id="openPoe" class="btn btn-ghost">Abrir Chat IA</button>
       </div>
+    </div>
+    <div class="hero-showcase">
+      <div class="hero-card"><img src="assets/products/hero1.jpg" alt="Destacado 1"></div>
+      <div class="hero-card"><img src="assets/products/hero2.jpg" alt="Destacado 2"></div>
+      <div class="hero-card"><img src="assets/products/hero3.jpg" alt="Destacado 3"></div>
     </div>
   </section>
 
   <main>
+    <!-- Buscador -->
     <section class="search-section">
-      <input id="searchInput" type="text" placeholder="Buscar productos..." />
+      <input id="searchInput" type="text" placeholder="Buscar: detergente 5kg, papel jumbo..." />
       <button id="searchBtn" class="btn btn-primary">Buscar</button>
     </section>
 
+    <!-- Catálogo -->
     <section id="catalogo" class="catalog-section">
       <div class="section-head">
         <h2>Catálogo</h2>
@@ -46,32 +54,38 @@
   </main>
 
   <footer class="footer">
-    <p>© 2025 Bodega Inteligente 360° — Catálogo con IA</p>
+    <p>© 2025 Bodega 360 — Catálogo</p>
   </footer>
 
-  <!-- Modal de producto -->
+  <!-- ========== Modal Detalle de Producto (con visor 3D) ========== -->
   <div id="productModal" class="modal" aria-hidden="true">
     <div class="modal__backdrop" id="modalBackdrop"></div>
     <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <button class="modal__close" id="modalClose" aria-label="Cerrar">✕</button>
+
       <div class="modal__header">
-        <h3 id="modalTitle" class="modal__title">Producto</h3>
+        <h3 id="modalTitle" class="modal__title">Título del producto</h3>
       </div>
+
       <div class="modal__content">
         <div class="modal__media">
-          <canvas id="viewerCanvas"></canvas>
-          <div class="viewer3d__overlay" id="viewerOverlay">Cargando 3D…</div>
+          <!-- Visor 3D -->
+          <div class="viewer3d">
+            <canvas id="viewerCanvas"></canvas>
+            <div class="viewer3d__overlay" id="viewerOverlay">Cargando 3D…</div>
+          </div>
         </div>
+
         <div class="modal__info">
           <div class="price" id="modalPrice">$0.00</div>
-          <p class="desc" id="modalDesc"></p>
+          <p class="desc" id="modalDesc">Descripción…</p>
           <div class="specs" id="modalSpecs"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Chat Modal -->
+  <!-- ========== Modal Chat IA (opcional; tu app.js lo usa) ========== -->
   <div id="chatModal" class="modal" aria-hidden="true">
     <div class="modal__backdrop" id="chatBackdrop"></div>
     <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
@@ -89,19 +103,13 @@
     </div>
   </div>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
-  }
-}
-</script>
-<script type="module" src="./app.js"></script>
+  <!-- ========== LIBRERÍAS Three.js (globales) ========== -->
+  <script src="https://unpkg.com/three@0.161.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.161.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://unpkg.com/three@0.161.0/examples/js/loaders/GLTFLoader.js"></script>
 
-
-
-
+  <!-- ========== Tu App (SIN type="module") ========== -->
+  <script src="./app.js"></script>
 </body>
 </html>
 
