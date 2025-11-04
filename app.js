@@ -32,7 +32,6 @@ async function loadProducts(){
     console.error(e);
   }
 }
-
 function renderChips(){
   const cats = [...new Set(PRODUCTS.map(p=>p.category).filter(Boolean))];
   chips.innerHTML = '';
@@ -51,12 +50,10 @@ function renderChips(){
     chips.appendChild(c);
   });
 }
-
 function setActive(el){
   chips.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
   el.classList.add('active');
 }
-
 function renderProducts(list){
   grid.innerHTML = '';
   list.forEach(p=>{
@@ -75,7 +72,6 @@ function renderProducts(list){
     grid.appendChild(card);
   });
 }
-
 searchBtn.addEventListener('click', ()=>{
   const t = searchInput.value.trim().toLowerCase();
   if(!t) { renderProducts(PRODUCTS); return; }
@@ -103,7 +99,21 @@ const btnFullscreen = document.getElementById('btnFullscreen');
 
 let r3d = null, scn = null, cam = null, ctl = null, cube = null, currentGltf = null;
 
-function openProductModal(p){
+// Espera a que THREE exista (evita errores por timing del CDN)
+function waitForThree(maxMs = 5000){
+  return new Promise((resolve, reject)=>{
+    const start = Date.now();
+    const tick = () => {
+      if (window.THREE && THREE.OrbitControls && THREE.GLTFLoader) return resolve();
+      if (Date.now() - start > maxMs) return reject(new Error('THREE no disponible'));
+      setTimeout(tick, 50);
+    };
+    tick();
+  });
+}
+
+async function openProductModal(p){
+  // Info
   elTitle.textContent = p.title;
   elPrice.textContent = '$' + Number(p.price).toLocaleString();
   elDesc.textContent  = p.description || 'Producto disponible para mayoreo.';
@@ -120,12 +130,24 @@ function openProductModal(p){
     elSpecs.appendChild(frag);
   }
 
+  // Abrir
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden','false');
 
-  initViewer();
-  loadModel(p.modelUrl);
-  setTimeout(safeResizeViewer, 100);
+  // Visor 3D
+  viewerOverlay.textContent = 'Cargando 3D…';
+  viewerOverlay.style.display = 'flex';
+
+  try{
+    await waitForThree();         // <— evita "THREE is not defined"
+    initViewer();
+    loadModel(p.modelUrl);
+    setTimeout(safeResizeViewer, 0);
+  }catch(e){
+    console.error(e);
+    viewerOverlay.textContent = 'Error cargando Three.js';
+    setTimeout(()=> viewerOverlay.style.display='none', 1500);
+  }
 }
 
 function closeProductModal(){
@@ -137,14 +159,7 @@ modalBackdrop.addEventListener('click', closeProductModal);
 document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('is-open')) closeProductModal(); });
 
 function initViewer(){
-  if (r3d && scn && cam) return;
-
-  // Verificar que Three esté cargado
-  if (typeof THREE === 'undefined') {
-    console.error('THREE.js no está cargado.');
-    viewerOverlay.textContent = 'Error cargando Three.js';
-    return;
-  }
+  if (r3d && scn && cam) return;  // ya creado
 
   r3d = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias: true });
 
@@ -159,9 +174,9 @@ function initViewer(){
   ctl = new THREE.OrbitControls(cam, r3d.domElement);
   ctl.enableDamping = true;
 
-  const light = new THREE.DirectionalLight(0xffffff, 1.2);
-  light.position.set(5,5,5);
-  scn.add(light, new THREE.AmbientLight(0x6680a6, 0.6));
+  const key = new THREE.DirectionalLight(0xffffff, 1.2);
+  key.position.set(5,5,5);
+  scn.add(key, new THREE.AmbientLight(0x6680a6, 0.6));
 
   cube = new THREE.Mesh(
     new THREE.BoxGeometry(1,1,1),
@@ -171,14 +186,12 @@ function initViewer(){
 
   animateViewer();
 }
-
 function animateViewer(){
   requestAnimationFrame(animateViewer);
   if(cube) cube.rotation.y += 0.01;
   ctl && ctl.update();
   r3d && scn && cam && r3d.render(scn, cam);
 }
-
 function safeResizeViewer(){
   if (!r3d || !cam || !viewerCanvas) return;
   const parent = viewerCanvas.parentElement || viewerCanvas;
@@ -192,9 +205,6 @@ function safeResizeViewer(){
 window.addEventListener('resize', safeResizeViewer);
 
 function loadModel(url){
-  viewerOverlay.textContent = 'Cargando 3D…';
-  viewerOverlay.style.display = 'flex';
-
   if(currentGltf){ scn.remove(currentGltf); currentGltf = null; }
   if(!url || !(url.endsWith('.glb') || url.endsWith('.gltf'))){
     cube && (cube.visible = true);
@@ -236,4 +246,3 @@ btnFullscreen.addEventListener('click', ()=>{
 
 // ================== INIT ==================
 loadProducts();
-
