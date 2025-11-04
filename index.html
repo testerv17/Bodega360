@@ -27,6 +27,35 @@
     .search-section{display:flex;gap:8px;padding:16px}
     .search-section input{flex:1;border:1px solid #20314e;background:#0f1929;color:#e3ecff;border-radius:10px;padding:10px}
     .footer{padding:16px;color:#7f95b9;border-top:1px solid #1c2a42;text-align:center}
+    /* Modal <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bodega 360 — Catálogo 3D</title>
+  <meta name="description" content="Catálogo mayorista con visor 3D. 100% estático con JSON.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body{background:#0b1018;color:#d7e0f7;font-family:Inter,system-ui,Arial;margin:0}
+    .topbar{position:sticky;top:0;background:#0e1522;border-bottom:1px solid #1c2a42;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;z-index:5}
+    .logo{font-weight:800} .logo span{color:#5ab0ff}
+    .nav a{color:#9fb0c9;margin:0 8px;text-decoration:none}
+    .hero{padding:40px 16px;border-bottom:1px solid #1c2a42}
+    .btn{background:#121e33;border:1px solid #20314e;color:#d7e0f7;border-radius:10px;padding:10px 14px;cursor:pointer}
+    .btn-primary{background:#2b80ff;border-color:#2b80ff}
+    .catalog-section{padding:24px 16px}
+    .catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+    .card{background:#0f1929;border:1px solid #1e2b45;border-radius:14px;overflow:hidden;position:relative}
+    .card img{width:100%;height:160px;object-fit:cover;background:#0b1018}
+    .card .title{font-weight:600;padding:10px 12px}
+    .card .meta{display:flex;align-items:center;justify-content:space-between;padding:0 12px 12px}
+    .badge.sale{position:absolute;left:8px;top:8px;background:#ff3366;padding:4px 8px;border-radius:8px;font-weight:700}
+    .chip{display:inline-block;border:1px solid #2a3c5f;color:#9fb0c9;padding:6px 10px;border-radius:999px;margin:0 6px 6px 0;font-size:12px}
+    .chip.active{background:#1a2a45;color:#fff;border-color:#1a2a45}
+    .search-section{display:flex;gap:8px;padding:16px}
+    .search-section input{flex:1;border:1px solid #20314e;background:#0f1929;color:#e3ecff;border-radius:10px;padding:10px}
+    .footer{padding:16px;color:#7f95b9;border-top:1px solid #1c2a42;text-align:center}
     /* Modal */
     .modal{position:fixed;inset:0;display:none}
     .modal.is-open{display:block}
@@ -96,12 +125,7 @@
     </div>
   </div>
 
-  <!-- Three.js (globales) -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/examples/js/loaders/GLTFLoader.js"></script>
-
-  <!-- Tu app (SIN type="module") -->
-  <script src="app.js"></script>
+  <!-- Tu app como MÓDULO ESM -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
