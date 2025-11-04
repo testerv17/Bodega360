@@ -1,9 +1,9 @@
-// Importa Three + controles + loader desde CDN (ESM)
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/loaders/GLTFLoader.js';
+// Importa Three y addons usando el import map
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-// ================== CATALOGO ==================
+// ====== Catálogo ======
 const chips = document.getElementById('chips');
 const grid  = document.getElementById('catalogGrid');
 const searchBtn = document.getElementById('searchBtn');
@@ -12,38 +12,28 @@ const searchInput = document.getElementById('searchInput');
 let PRODUCTS = [];
 
 async function loadProducts(){
-  try{
-    const res = await fetch('./data/products.json?ts=' + Date.now());
-    if(!res.ok) throw new Error('No se pudo cargar products.json');
-    PRODUCTS = await res.json();
-    renderChips();
-    renderProducts(PRODUCTS);
-  }catch(e){ console.error(e); }
+  const res = await fetch('./data/products.json?ts=' + Date.now());
+  PRODUCTS = await res.json();
+  renderChips();
+  renderProducts(PRODUCTS);
 }
 
 function renderChips(){
   const cats = [...new Set(PRODUCTS.map(p=>p.category).filter(Boolean))];
   chips.innerHTML = '';
-
   const all = document.createElement('span');
   all.className = 'chip active';
   all.textContent = 'Todos';
   all.addEventListener('click', ()=>{ setActive(all); renderProducts(PRODUCTS); });
   chips.appendChild(all);
-
   cats.forEach(cat=>{
     const c = document.createElement('span');
-    c.className = 'chip';
-    c.textContent = cat;
+    c.className = 'chip'; c.textContent = cat;
     c.addEventListener('click', ()=>{ setActive(c); renderProducts(PRODUCTS.filter(p=>p.category===cat)); });
     chips.appendChild(c);
   });
 }
-
-function setActive(el){
-  chips.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-  el.classList.add('active');
-}
+function setActive(el){ chips.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
 
 function renderProducts(list){
   grid.innerHTML = '';
@@ -56,9 +46,8 @@ function renderProducts(list){
       <div class="title">${p.title}</div>
       <div class="meta">
         <span>$${Number(p.price).toLocaleString()}</span>
-        <button class="btn btn-ghost" aria-label="Ver detalles">Detalles</button>
-      </div>
-    `;
+        <button class="btn btn-ghost">Detalles</button>
+      </div>`;
     card.querySelector('button').addEventListener('click', ()=> openProductModal(p));
     grid.appendChild(card);
   });
@@ -66,7 +55,7 @@ function renderProducts(list){
 
 searchBtn.addEventListener('click', ()=>{
   const t = searchInput.value.trim().toLowerCase();
-  if(!t) { renderProducts(PRODUCTS); return; }
+  if(!t) return renderProducts(PRODUCTS);
   const filtered = PRODUCTS.filter(p=>{
     const bag = (p.title+' '+(p.category||'')+' '+(p.keywords||[]).join(' ')).toLowerCase();
     return bag.includes(t);
@@ -74,7 +63,7 @@ searchBtn.addEventListener('click', ()=>{
   renderProducts(filtered);
 });
 
-// ================== MODAL + VISOR 3D ==================
+// ====== Modal + Visor 3D ======
 const modal = document.getElementById('productModal');
 const modalClose = document.getElementById('modalClose');
 const modalBackdrop = document.getElementById('modalBackdrop');
@@ -92,12 +81,11 @@ const btnFullscreen = document.getElementById('btnFullscreen');
 let renderer, scene, camera, controls, cube, currentGltf;
 
 function openProductModal(p){
-  // Info
   elTitle.textContent = p.title;
   elPrice.textContent = '$' + Number(p.price).toLocaleString();
   elDesc.textContent  = p.description || 'Producto disponible para mayoreo.';
   elSpecs.innerHTML = '';
-  if (p.specs) {
+  if (p.specs){
     const frag = document.createElement('div');
     Object.entries(p.specs).forEach(([k,v])=>{
       const row = document.createElement('div');
@@ -108,11 +96,9 @@ function openProductModal(p){
     elSpecs.appendChild(frag);
   }
 
-  // Abrir modal
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden','false');
 
-  // Visor 3D
   viewerOverlay.textContent = 'Cargando 3D…';
   viewerOverlay.style.display = 'flex';
 
@@ -121,39 +107,32 @@ function openProductModal(p){
   setTimeout(resizeViewer, 0);
 }
 
-function closeProductModal(){
-  modal.classList.remove('is-open');
-  modal.setAttribute('aria-hidden','true');
-}
+function closeProductModal(){ modal.classList.remove('is-open'); modal.setAttribute('aria-hidden','true'); }
 modalClose.addEventListener('click', closeProductModal);
 modalBackdrop.addEventListener('click', closeProductModal);
-document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('is-open')) closeProductModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && modal.classList.contains('is-open')) closeProductModal(); });
 
 function initViewer(){
-  if (renderer && scene && camera) return;  // ya creado
+  if (renderer && scene && camera) return;
 
-  renderer = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias: true });
+  renderer = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias:true });
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0b1018);
 
   camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
   camera.position.set(2.5, 2, 3.5);
 
-  resizeViewer();
-
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
 
-  const light = new THREE.DirectionalLight(0xffffff, 1.2);
-  light.position.set(5,5,5);
+  const light = new THREE.DirectionalLight(0xffffff, 1.2); light.position.set(5,5,5);
   scene.add(light, new THREE.AmbientLight(0x6680a6, 0.6));
 
-  cube = new THREE.Mesh(
-    new THREE.BoxGeometry(1,1,1),
-    new THREE.MeshStandardMaterial({ color: 0x36a3ff, metalness: .2, roughness: .4 })
-  );
+  cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),
+                        new THREE.MeshStandardMaterial({color:0x36a3ff, metalness:.2, roughness:.4}));
   scene.add(cube);
 
+  resizeViewer();
   animate();
 }
 
@@ -165,14 +144,13 @@ function animate(){
 }
 
 function resizeViewer(){
-  if (!renderer || !camera || !viewerCanvas) return;
+  if (!renderer || !camera) return;
   const parent = viewerCanvas.parentElement || viewerCanvas;
   const rect = parent.getBoundingClientRect();
   const w = Math.max(1, rect.width || parent.clientWidth || 1);
   const h = Math.max(1, viewerCanvas.clientHeight || Math.round(w * 0.56));
   renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
+  camera.aspect = w/h; camera.updateProjectionMatrix();
 }
 window.addEventListener('resize', resizeViewer);
 
@@ -193,7 +171,7 @@ function loadModel(url){
       scene.add(currentGltf);
       cube && (cube.visible = false);
       camera.position.set(2.5, 2, 3.5);
-      if (controls){ controls.target.set(0,0.6,0); controls.update(); }
+      controls.target.set(0,0.6,0); controls.update();
       viewerOverlay.style.display = 'none';
       setTimeout(resizeViewer, 0);
     },
@@ -210,8 +188,7 @@ function loadModel(url){
 btnResetCam.addEventListener('click', ()=>{
   if (!camera || !controls) return;
   camera.position.set(2.5, 2, 3.5);
-  controls.target.set(0,0,0);
-  controls.update();
+  controls.target.set(0,0,0); controls.update();
 });
 btnFullscreen.addEventListener('click', ()=>{
   if (!viewerCanvas) return;
@@ -219,5 +196,5 @@ btnFullscreen.addEventListener('click', ()=>{
   else viewerCanvas.requestFullscreen?.();
 });
 
-// ================== INIT ==================
+// ====== INIT ======
 loadProducts();
