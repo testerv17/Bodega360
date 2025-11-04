@@ -1,10 +1,14 @@
-// ================== NAV ==================
+// Importa Three + controles + loader desde CDN (ESM)
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/loaders/GLTFLoader.js';
+
+// ================== CATALOGO ==================
 const chips = document.getElementById('chips');
 const grid  = document.getElementById('catalogGrid');
 const searchBtn = document.getElementById('searchBtn');
 const searchInput = document.getElementById('searchInput');
 
-// ================== CATALOGO ==================
 let PRODUCTS = [];
 
 async function loadProducts(){
@@ -47,7 +51,7 @@ function renderProducts(list){
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      ${p.onSale ? '<div class="badge sale" style="position:absolute;margin:8px;background:#ff3366;border-radius:8px;padding:4px 8px;font-weight:600">OFERTA</div>' : ''}
+      ${p.onSale ? '<div class="badge sale">OFERTA</div>' : ''}
       <img src="${p.img}" alt="${p.title}">
       <div class="title">${p.title}</div>
       <div class="meta">
@@ -85,7 +89,7 @@ const viewerOverlay = document.getElementById('viewerOverlay');
 const btnResetCam = document.getElementById('btnResetCam');
 const btnFullscreen = document.getElementById('btnFullscreen');
 
-let r3d = null, scn = null, cam = null, ctl = null, cube = null, currentGltf = null;
+let renderer, scene, camera, controls, cube, currentGltf;
 
 function openProductModal(p){
   // Info
@@ -97,8 +101,7 @@ function openProductModal(p){
     const frag = document.createElement('div');
     Object.entries(p.specs).forEach(([k,v])=>{
       const row = document.createElement('div');
-      row.style.display='flex'; row.style.justifyContent='space-between';
-      row.style.gap='8px'; row.style.fontSize='14px';
+      row.style.display='flex'; row.style.justifyContent='space-between'; row.style.gap='8px'; row.style.fontSize='14px';
       row.innerHTML = `<span style="color:#9fb0c9">${k}</span><strong>${v}</strong>`;
       frag.appendChild(row);
     });
@@ -109,13 +112,13 @@ function openProductModal(p){
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden','false');
 
-  // Visor
+  // Visor 3D
   viewerOverlay.textContent = 'Cargando 3D…';
   viewerOverlay.style.display = 'flex';
 
   initViewer();
   loadModel(p.modelUrl);
-  setTimeout(safeResizeViewer, 0);
+  setTimeout(resizeViewer, 0);
 }
 
 function closeProductModal(){
@@ -127,79 +130,72 @@ modalBackdrop.addEventListener('click', closeProductModal);
 document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('is-open')) closeProductModal(); });
 
 function initViewer(){
-  if (r3d && scn && cam) return;  // ya creado
+  if (renderer && scene && camera) return;  // ya creado
 
-  if (typeof THREE === 'undefined' || !THREE.OrbitControls || !THREE.GLTFLoader) {
-    console.error('THREE.js no está cargado.');
-    viewerOverlay.textContent = 'Error cargando Three.js';
-    return;
-  }
+  renderer = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias: true });
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0b1018);
 
-  r3d = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias: true });
+  camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+  camera.position.set(2.5, 2, 3.5);
 
-  scn = new THREE.Scene();
-  scn.background = new THREE.Color(0x0b1018);
+  resizeViewer();
 
-  cam = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
-  cam.position.set(2.5, 2, 3.5);
-
-  safeResizeViewer();
-
-  ctl = new THREE.OrbitControls(cam, r3d.domElement);
-  ctl.enableDamping = true;
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
 
   const light = new THREE.DirectionalLight(0xffffff, 1.2);
   light.position.set(5,5,5);
-  scn.add(light, new THREE.AmbientLight(0x6680a6, 0.6));
+  scene.add(light, new THREE.AmbientLight(0x6680a6, 0.6));
 
   cube = new THREE.Mesh(
     new THREE.BoxGeometry(1,1,1),
     new THREE.MeshStandardMaterial({ color: 0x36a3ff, metalness: .2, roughness: .4 })
   );
-  scn.add(cube);
+  scene.add(cube);
 
-  animateViewer();
+  animate();
 }
 
-function animateViewer(){
-  requestAnimationFrame(animateViewer);
+function animate(){
+  requestAnimationFrame(animate);
   if(cube) cube.rotation.y += 0.01;
-  ctl && ctl.update();
-  r3d && scn && cam && r3d.render(scn, cam);
+  controls && controls.update();
+  renderer && scene && camera && renderer.render(scene, camera);
 }
 
-function safeResizeViewer(){
-  if (!r3d || !cam || !viewerCanvas) return;
+function resizeViewer(){
+  if (!renderer || !camera || !viewerCanvas) return;
   const parent = viewerCanvas.parentElement || viewerCanvas;
   const rect = parent.getBoundingClientRect();
   const w = Math.max(1, rect.width || parent.clientWidth || 1);
-  const h = Math.max(1, viewerCanvas.clientHeight || Math.round(w * 0.56)); // 16:9 aprox
-  r3d.setSize(w, h, false);
-  cam.aspect = w / h;
-  cam.updateProjectionMatrix();
+  const h = Math.max(1, viewerCanvas.clientHeight || Math.round(w * 0.56));
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
 }
-window.addEventListener('resize', safeResizeViewer);
+window.addEventListener('resize', resizeViewer);
 
 function loadModel(url){
-  if(currentGltf){ scn.remove(currentGltf); currentGltf = null; }
+  if(currentGltf){ scene.remove(currentGltf); currentGltf = null; }
   if(!url || !(url.endsWith('.glb') || url.endsWith('.gltf'))){
     cube && (cube.visible = true);
     viewerOverlay.style.display = 'none';
     return;
   }
 
-  const loader = new THREE.GLTFLoader();
+  const loader = new GLTFLoader();
   loader.load(
     url,
     (gltf)=>{
       currentGltf = gltf.scene;
       currentGltf.traverse(n=>{ if(n.isMesh){ n.castShadow = n.receiveShadow = true; } });
-      scn.add(currentGltf);
+      scene.add(currentGltf);
       cube && (cube.visible = false);
-      cam.position.set(2.5, 2, 3.5);
-      if (ctl){ ctl.target.set(0,0.6,0); ctl.update(); }
+      camera.position.set(2.5, 2, 3.5);
+      if (controls){ controls.target.set(0,0.6,0); controls.update(); }
       viewerOverlay.style.display = 'none';
-      setTimeout(safeResizeViewer, 0);
+      setTimeout(resizeViewer, 0);
     },
     undefined,
     (err)=>{
@@ -212,10 +208,10 @@ function loadModel(url){
 }
 
 btnResetCam.addEventListener('click', ()=>{
-  if (!cam || !ctl) return;
-  cam.position.set(2.5, 2, 3.5);
-  ctl.target.set(0,0,0);
-  ctl.update();
+  if (!camera || !controls) return;
+  camera.position.set(2.5, 2, 3.5);
+  controls.target.set(0,0,0);
+  controls.update();
 });
 btnFullscreen.addEventListener('click', ()=>{
   if (!viewerCanvas) return;
