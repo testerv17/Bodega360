@@ -99,20 +99,7 @@ const btnFullscreen = document.getElementById('btnFullscreen');
 
 let r3d = null, scn = null, cam = null, ctl = null, cube = null, currentGltf = null;
 
-// Espera a que THREE exista (evita errores por timing del CDN)
-function waitForThree(maxMs = 5000){
-  return new Promise((resolve, reject)=>{
-    const start = Date.now();
-    const tick = () => {
-      if (window.THREE && THREE.OrbitControls && THREE.GLTFLoader) return resolve();
-      if (Date.now() - start > maxMs) return reject(new Error('THREE no disponible'));
-      setTimeout(tick, 50);
-    };
-    tick();
-  });
-}
-
-async function openProductModal(p){
+function openProductModal(p){
   // Info
   elTitle.textContent = p.title;
   elPrice.textContent = '$' + Number(p.price).toLocaleString();
@@ -122,32 +109,21 @@ async function openProductModal(p){
     const frag = document.createElement('div');
     Object.entries(p.specs).forEach(([k,v])=>{
       const row = document.createElement('div');
-      row.style.display='flex'; row.style.justifyContent='space-between';
-      row.style.gap='8px'; row.style.fontSize='14px';
+      row.style.display='flex'; row.style.justifyContent='space-between'; row.style.gap='8px'; row.style.fontSize='14px';
       row.innerHTML = `<span style="color:#9fb0c9">${k}</span><strong>${v}</strong>`;
       frag.appendChild(row);
     });
     elSpecs.appendChild(frag);
   }
 
-  // Abrir
+  // Abrir modal
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden','false');
 
-  // Visor 3D
-  viewerOverlay.textContent = 'Cargando 3D…';
-  viewerOverlay.style.display = 'flex';
-
-  try{
-    await waitForThree();         // <— evita "THREE is not defined"
-    initViewer();
-    loadModel(p.modelUrl);
-    setTimeout(safeResizeViewer, 0);
-  }catch(e){
-    console.error(e);
-    viewerOverlay.textContent = 'Error cargando Three.js';
-    setTimeout(()=> viewerOverlay.style.display='none', 1500);
-  }
+  // Visor
+  initViewer();
+  loadModel(p.modelUrl);
+  setTimeout(safeResizeViewer, 0);
 }
 
 function closeProductModal(){
@@ -159,7 +135,13 @@ modalBackdrop.addEventListener('click', closeProductModal);
 document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('is-open')) closeProductModal(); });
 
 function initViewer(){
-  if (r3d && scn && cam) return;  // ya creado
+  if (r3d && scn && cam) return;
+
+  if (typeof THREE === 'undefined') {
+    console.error('THREE.js no está cargado.');
+    viewerOverlay.textContent = 'Error cargando Three.js';
+    return;
+  }
 
   r3d = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias: true });
 
@@ -174,9 +156,9 @@ function initViewer(){
   ctl = new THREE.OrbitControls(cam, r3d.domElement);
   ctl.enableDamping = true;
 
-  const key = new THREE.DirectionalLight(0xffffff, 1.2);
-  key.position.set(5,5,5);
-  scn.add(key, new THREE.AmbientLight(0x6680a6, 0.6));
+  const light = new THREE.DirectionalLight(0xffffff, 1.2);
+  light.position.set(5,5,5);
+  scn.add(light, new THREE.AmbientLight(0x6680a6, 0.6));
 
   cube = new THREE.Mesh(
     new THREE.BoxGeometry(1,1,1),
@@ -205,6 +187,9 @@ function safeResizeViewer(){
 window.addEventListener('resize', safeResizeViewer);
 
 function loadModel(url){
+  viewerOverlay.textContent = 'Cargando 3D…';
+  viewerOverlay.style.display = 'flex';
+
   if(currentGltf){ scn.remove(currentGltf); currentGltf = null; }
   if(!url || !(url.endsWith('.glb') || url.endsWith('.gltf'))){
     cube && (cube.visible = true);
