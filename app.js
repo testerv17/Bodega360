@@ -87,6 +87,7 @@ searchBtn.addEventListener('click', ()=>{
 });
 
 // ================== MODAL + VISOR 3D ==================
+// ================== MODAL + VISOR 3D ==================
 const modal = document.getElementById('productModal');
 const modalClose = document.getElementById('modalClose');
 const modalBackdrop = document.getElementById('modalBackdrop');
@@ -103,11 +104,32 @@ const btnFullscreen = document.getElementById('btnFullscreen');
 
 let r3d = null, scn = null, cam = null, ctl = null, cube = null, currentGltf = null;
 
-function openProductModal(p){
-  // Info
+// Carga segura de Three + addons si aún no están
+function ensureThree() {
+  return new Promise((resolve, reject) => {
+    if (window.THREE && THREE.OrbitControls && THREE.GLTFLoader) return resolve();
+    const urls = [
+      'https://unpkg.com/three@0.161.0/build/three.min.js',
+      'https://unpkg.com/three@0.161.0/examples/js/controls/OrbitControls.js',
+      'https://unpkg.com/three@0.161.0/examples/js/loaders/GLTFLoader.js'
+    ];
+    let i = 0;
+    const loadNext = () => {
+      if (i >= urls.length) return resolve();
+      const s = document.createElement('script');
+      s.src = urls[i++];
+      s.onload = loadNext;
+      s.onerror = () => reject(new Error('No se pudo cargar: ' + s.src));
+      document.head.appendChild(s);
+    };
+    loadNext();
+  });
+}
+
+async function openProductModal(p){
   elTitle.textContent = p.title;
   elPrice.textContent = '$' + Number(p.price).toLocaleString();
-  elDesc.textContent = p.description || 'Producto disponible para mayoreo.';
+  elDesc.textContent  = p.description || 'Producto disponible para mayoreo.';
   elSpecs.innerHTML = '';
   if (p.specs) {
     const frag = document.createElement('div');
@@ -120,43 +142,41 @@ function openProductModal(p){
     elSpecs.appendChild(frag);
   }
 
-  // Abrir modal
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden','false');
 
-  // Viewer
-  initViewer();
-  loadModel(p.modelUrl);
-  // Ajustar tamaño tras abrir
-  setTimeout(safeResizeViewer, 0);
+  try {
+    await ensureThree();
+    initViewer();
+    loadModel(p.modelUrl);
+    setTimeout(safeResizeViewer, 0);
+  } catch (e) {
+    console.error(e);
+    viewerOverlay.textContent = 'Error cargando Three.js';
+  }
 }
 
 function closeProductModal(){
   modal.classList.remove('is-open');
   modal.setAttribute('aria-hidden','true');
-  // no destruimos el renderer, solo ocultamos el modal
 }
 modalClose.addEventListener('click', closeProductModal);
 modalBackdrop.addEventListener('click', closeProductModal);
 document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('is-open')) closeProductModal(); });
 
 function initViewer(){
-  if (r3d && scn && cam) return; // ya inicializado
+  if (r3d && scn && cam) return;
 
-  // Renderer
   r3d = new THREE.WebGLRenderer({ canvas: viewerCanvas, antialias: true });
 
-  // Escena y Cámara
   scn = new THREE.Scene();
   scn.background = new THREE.Color(0x0b1018);
 
   cam = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
   cam.position.set(2.5, 2, 3.5);
 
-  // Primer resize seguro
   safeResizeViewer();
 
-  // Controles y luces
   ctl = new THREE.OrbitControls(cam, r3d.domElement);
   ctl.enableDamping = true;
 
@@ -164,24 +184,20 @@ function initViewer(){
   key.position.set(5,5,5);
   scn.add(key, new THREE.AmbientLight(0x6680a6, 0.6));
 
-  // Placeholder
   cube = new THREE.Mesh(
     new THREE.BoxGeometry(1,1,1),
     new THREE.MeshStandardMaterial({ color: 0x36a3ff, metalness: .2, roughness: .4 })
   );
   scn.add(cube);
 
-  // Loop
   animateViewer();
 }
 
 function animateViewer(){
   requestAnimationFrame(animateViewer);
   if(cube) cube.rotation.y += 0.01;
-  if(r3d && scn && cam){
-    ctl && ctl.update();
-    r3d.render(scn, cam);
-  }
+  ctl && ctl.update();
+  r3d && scn && cam && r3d.render(scn, cam);
 }
 
 function safeResizeViewer(){
@@ -189,7 +205,7 @@ function safeResizeViewer(){
   const parent = viewerCanvas.parentElement || viewerCanvas;
   const rect = parent.getBoundingClientRect();
   const w = Math.max(1, rect.width || parent.clientWidth || 1);
-  const h = Math.max(1, viewerCanvas.clientHeight || Math.round(w * 0.56)); // 16:9 aprox
+  const h = Math.max(1, viewerCanvas.clientHeight || Math.round(w * 0.56));
   r3d.setSize(w, h, false);
   cam.aspect = w / h;
   cam.updateProjectionMatrix();
@@ -202,40 +218,32 @@ function loadModel(url){
 
   if(currentGltf){ scn.remove(currentGltf); currentGltf = null; }
   if(!url || !(url.endsWith('.glb') || url.endsWith('.gltf'))){
-    // si no hay modelo válido, muestra el cubo
-    if (cube) cube.visible = true;
+    cube && (cube.visible = true);
     viewerOverlay.style.display = 'none';
     return;
   }
 
-  try{
-    const loader = new THREE.GLTFLoader();
-    loader.load(
-      url,
-      (gltf)=>{
-        currentGltf = gltf.scene;
-        currentGltf.traverse(n=>{ if(n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
-        scn.add(currentGltf);
-        if (cube) cube.visible = false;
-        cam.position.set(2.5, 2, 3.5);
-        ctl && (ctl.target.set(0,0.6,0), ctl.update());
-        viewerOverlay.style.display = 'none';
-        setTimeout(safeResizeViewer, 0);
-      },
-      undefined,
-      (err)=>{
-        console.error('GLTF error:', err);
-        if (cube) cube.visible = true;
-        viewerOverlay.textContent = 'No se pudo cargar el modelo 3D.';
-        setTimeout(()=> viewerOverlay.style.display = 'none', 1500);
-      }
-    );
-  }catch(e){
-    console.error('GLTF exception:', e);
-    if (cube) cube.visible = true;
-    viewerOverlay.textContent = 'Error cargando 3D.';
-    setTimeout(()=> viewerOverlay.style.display = 'none', 1500);
-  }
+  const loader = new THREE.GLTFLoader();
+  loader.load(
+    url,
+    (gltf)=>{
+      currentGltf = gltf.scene;
+      currentGltf.traverse(n=>{ if(n.isMesh){ n.castShadow = n.receiveShadow = true; } });
+      scn.add(currentGltf);
+      cube && (cube.visible = false);
+      cam.position.set(2.5, 2, 3.5);
+      ctl && (ctl.target.set(0,0.6,0), ctl.update());
+      viewerOverlay.style.display = 'none';
+      setTimeout(safeResizeViewer, 0);
+    },
+    undefined,
+    (err)=>{
+      console.error('GLTF error:', err);
+      cube && (cube.visible = true);
+      viewerOverlay.textContent = 'No se pudo cargar el modelo 3D.';
+      setTimeout(()=> viewerOverlay.style.display = 'none', 1500);
+    }
+  );
 }
 
 btnResetCam.addEventListener('click', ()=>{
@@ -246,6 +254,7 @@ btnFullscreen.addEventListener('click', ()=>{
   if(document.fullscreenElement) document.exitFullscreen?.();
   else viewerCanvas.requestFullscreen?.();
 });
+
 
 // ================== INIT ==================
 loadProducts();
