@@ -1,24 +1,10 @@
 // ================== NAV ==================
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('navMenu');
-hamburger?.addEventListener('click', ()=>{
-  const open = navMenu.style.display === 'block';
-  navMenu.style.display = open ? 'none' : 'block';
-  hamburger.setAttribute('aria-expanded', String(!open));
-});
-navMenu?.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{
-  if(window.innerWidth <= 920){
-    navMenu.style.display = 'none';
-    hamburger.setAttribute('aria-expanded','false');
-  }
-}));
-
-// ================== CATALOGO ==================
 const chips = document.getElementById('chips');
 const grid  = document.getElementById('catalogGrid');
 const searchBtn = document.getElementById('searchBtn');
 const searchInput = document.getElementById('searchInput');
 
+// ================== CATALOGO ==================
 let PRODUCTS = [];
 
 async function loadProducts(){
@@ -28,10 +14,9 @@ async function loadProducts(){
     PRODUCTS = await res.json();
     renderChips();
     renderProducts(PRODUCTS);
-  }catch(e){
-    console.error(e);
-  }
+  }catch(e){ console.error(e); }
 }
+
 function renderChips(){
   const cats = [...new Set(PRODUCTS.map(p=>p.category).filter(Boolean))];
   chips.innerHTML = '';
@@ -50,17 +35,19 @@ function renderChips(){
     chips.appendChild(c);
   });
 }
+
 function setActive(el){
   chips.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
   el.classList.add('active');
 }
+
 function renderProducts(list){
   grid.innerHTML = '';
   list.forEach(p=>{
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      ${p.onSale ? '<div class="badge sale">OFERTA</div>' : ''}
+      ${p.onSale ? '<div class="badge sale" style="position:absolute;margin:8px;background:#ff3366;border-radius:8px;padding:4px 8px;font-weight:600">OFERTA</div>' : ''}
       <img src="${p.img}" alt="${p.title}">
       <div class="title">${p.title}</div>
       <div class="meta">
@@ -72,6 +59,7 @@ function renderProducts(list){
     grid.appendChild(card);
   });
 }
+
 searchBtn.addEventListener('click', ()=>{
   const t = searchInput.value.trim().toLowerCase();
   if(!t) { renderProducts(PRODUCTS); return; }
@@ -109,7 +97,8 @@ function openProductModal(p){
     const frag = document.createElement('div');
     Object.entries(p.specs).forEach(([k,v])=>{
       const row = document.createElement('div');
-      row.style.display='flex'; row.style.justifyContent='space-between'; row.style.gap='8px'; row.style.fontSize='14px';
+      row.style.display='flex'; row.style.justifyContent='space-between';
+      row.style.gap='8px'; row.style.fontSize='14px';
       row.innerHTML = `<span style="color:#9fb0c9">${k}</span><strong>${v}</strong>`;
       frag.appendChild(row);
     });
@@ -121,6 +110,9 @@ function openProductModal(p){
   modal.setAttribute('aria-hidden','false');
 
   // Visor
+  viewerOverlay.textContent = 'Cargando 3D…';
+  viewerOverlay.style.display = 'flex';
+
   initViewer();
   loadModel(p.modelUrl);
   setTimeout(safeResizeViewer, 0);
@@ -135,9 +127,9 @@ modalBackdrop.addEventListener('click', closeProductModal);
 document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('is-open')) closeProductModal(); });
 
 function initViewer(){
-  if (r3d && scn && cam) return;
+  if (r3d && scn && cam) return;  // ya creado
 
-  if (typeof THREE === 'undefined') {
+  if (typeof THREE === 'undefined' || !THREE.OrbitControls || !THREE.GLTFLoader) {
     console.error('THREE.js no está cargado.');
     viewerOverlay.textContent = 'Error cargando Three.js';
     return;
@@ -168,18 +160,20 @@ function initViewer(){
 
   animateViewer();
 }
+
 function animateViewer(){
   requestAnimationFrame(animateViewer);
   if(cube) cube.rotation.y += 0.01;
   ctl && ctl.update();
   r3d && scn && cam && r3d.render(scn, cam);
 }
+
 function safeResizeViewer(){
   if (!r3d || !cam || !viewerCanvas) return;
   const parent = viewerCanvas.parentElement || viewerCanvas;
   const rect = parent.getBoundingClientRect();
   const w = Math.max(1, rect.width || parent.clientWidth || 1);
-  const h = Math.max(1, viewerCanvas.clientHeight || Math.round(w * 0.56));
+  const h = Math.max(1, viewerCanvas.clientHeight || Math.round(w * 0.56)); // 16:9 aprox
   r3d.setSize(w, h, false);
   cam.aspect = w / h;
   cam.updateProjectionMatrix();
@@ -187,9 +181,6 @@ function safeResizeViewer(){
 window.addEventListener('resize', safeResizeViewer);
 
 function loadModel(url){
-  viewerOverlay.textContent = 'Cargando 3D…';
-  viewerOverlay.style.display = 'flex';
-
   if(currentGltf){ scn.remove(currentGltf); currentGltf = null; }
   if(!url || !(url.endsWith('.glb') || url.endsWith('.gltf'))){
     cube && (cube.visible = true);
@@ -206,7 +197,7 @@ function loadModel(url){
       scn.add(currentGltf);
       cube && (cube.visible = false);
       cam.position.set(2.5, 2, 3.5);
-      ctl && (ctl.target.set(0,0.6,0), ctl.update());
+      if (ctl){ ctl.target.set(0,0.6,0); ctl.update(); }
       viewerOverlay.style.display = 'none';
       setTimeout(safeResizeViewer, 0);
     },
@@ -221,10 +212,13 @@ function loadModel(url){
 }
 
 btnResetCam.addEventListener('click', ()=>{
+  if (!cam || !ctl) return;
   cam.position.set(2.5, 2, 3.5);
-  ctl && (ctl.target.set(0,0,0), ctl.update());
+  ctl.target.set(0,0,0);
+  ctl.update();
 });
 btnFullscreen.addEventListener('click', ()=>{
+  if (!viewerCanvas) return;
   if(document.fullscreenElement) document.exitFullscreen?.();
   else viewerCanvas.requestFullscreen?.();
 });
