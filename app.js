@@ -15,6 +15,8 @@ async function loadProducts(){
   const res = await fetch('./data/products.json?ts=' + Date.now());
   if(!res.ok) throw new Error('No se pudo cargar products.json');
   PRODUCTS = await res.json();
+  // asignar un ID único si no lo tienen
+PRODUCTS = PRODUCTS.map((p, i) => ({ id: i + 1, ...p }));
   renderChips(); renderProducts(PRODUCTS);
 }
 
@@ -74,7 +76,8 @@ const qrText = document.getElementById('qrText');
 let qrInstance = null;
 
 function openQRModal(product){
-  const productUrl = `https://tusitio.com/catalogo.html?productId=${encodeURIComponent(product.id)}`;
+  const productUrl = `https://testerv17.github.io/Bodega360/?productId=${encodeURIComponent(product.id)}`;
+
   qrModal.classList.add('is-open');
   qrModal.setAttribute('aria-hidden','false');
 
