@@ -131,6 +131,25 @@
     </div>
   </div>
 
+  <!-- Modal QR -->
+<div id="qrModal" class="modal" aria-hidden="true">
+  <div class="modal__backdrop" id="qrBackdrop"></div>
+  <div class="modal__panel" style="max-width:420px" role="dialog" aria-modal="true">
+    <button class="modal__close" id="qrClose" aria-label="Cerrar">✕</button>
+    <div class="modal__header">
+      <h3 id="qrTitle" class="modal__title">Código QR del producto</h3>
+    </div>
+    <div class="modal__content" style="grid-template-columns:1fr;text-align:center">
+      <div id="qrContainer" style="margin:auto;width:240px;height:240px"></div>
+      <p id="qrText" style="margin-top:10px;font-size:14px;color:#9fb0c9"></p>
+    </div>
+  </div>
+</div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
   <!-- Tu app como módulo -->
   <script type="module" src="app.js"></script>
 </body>
