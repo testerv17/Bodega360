@@ -57,6 +57,9 @@
     <h1><span style="color:#5ab0ff">Mayoristas</span> con impacto visual</h1>
     <p>Explora nuestro catálogo con tarjetas y visor 3D.</p>
     <button class="btn btn-primary" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Explorar catálogo</button>
+    <button id="btnTour" class="btn" style="margin-left:8px">
+  Recorrido virtual 360°
+</button>
   </section>
 
   <section class="search-section">
@@ -99,6 +102,36 @@
       </div>
     </div>
   </div>
+  <!-- ===== Modal Recorrido Virtual 360° ===== -->
+<div id="tourModal" class="modal" aria-hidden="true">
+  <div class="modal__backdrop" id="tourBackdrop"></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+    <button class="modal__close" id="tourClose" aria-label="Cerrar">✕</button>
+
+    <div class="modal__header">
+      <h3 id="tourTitle" class="modal__title">Recorrido virtual 360°</h3>
+    </div>
+
+    <div class="modal__content" style="grid-template-columns: 1fr;">
+      <div class="viewer3d">
+        <canvas id="tourCanvas"></canvas>
+        <div class="viewer3d__overlay" id="tourOverlay">Cargando panorama…</div>
+        <div class="viewer3d__actions">
+          <button id="tourBtnEntrada" class="btn">Entrada</button>
+          <button id="tourBtnPasillo" class="btn">Pasillo</button>
+          <button id="tourBtnZoomIn" class="btn">Zoom +</button>
+          <button id="tourBtnZoomOut" class="btn">Zoom −</button>
+          <button id="tourBtnFS" class="btn">Pantalla completa</button>
+        </div>
+      </div>
+      <p class="desc" style="margin-top:12px">
+        Demo 360° (arrastra para mirar alrededor). Luego puedes cambiar estas imágenes por
+        tus panorámicas reales en <code>assets/360/</code>.
+      </p>
+    </div>
+  </div>
+</div>
+
 
   <!-- Tu app como módulo ESM -->
   <script type="module" src="app.js"></script>
