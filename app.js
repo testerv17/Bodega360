@@ -61,6 +61,41 @@ searchBtn.addEventListener('click', ()=>{
   renderProducts(filtered);
 });
 
+/* ============== Modal de Código QR ============== */
+const qrModal = document.getElementById('qrModal');
+const qrBackdrop = document.getElementById('qrBackdrop');
+const qrClose = document.getElementById('qrClose');
+const qrContainer = document.getElementById('qrContainer');
+const qrText = document.getElementById('qrText');
+let qrInstance = null;
+
+function openQRModal(product){
+  const productUrl = `https://tusitio.com/catalogo.html?productId=${encodeURIComponent(product.id)}`;
+  qrModal.classList.add('is-open');
+  qrModal.setAttribute('aria-hidden','false');
+
+  qrContainer.innerHTML = ''; // limpiar anterior
+  qrInstance = new QRCode(qrContainer, {
+    text: productUrl,
+    width: 240,
+    height: 240,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+  });
+
+  qrText.textContent = productUrl;
+}
+
+function closeQRModal(){
+  qrModal.classList.remove('is-open');
+  qrModal.setAttribute('aria-hidden','true');
+}
+qrBackdrop?.addEventListener('click', closeQRModal);
+qrClose?.addEventListener('click', closeQRModal);
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && qrModal.classList.contains('is-open')) closeQRModal(); });
+
+
 /* ================== Modal Producto + Visor 3D ================== */
 const modal = document.getElementById('productModal');
 const modalClose = document.getElementById('modalClose');
