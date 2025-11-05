@@ -214,8 +214,9 @@ let tourRenderer = null, tourScene = null, tourCamera = null, tourControls = nul
 let tourAnimating = false;
 
 // Panorámicas demo (equirectangulares JPG 2:1). Puedes cambiarlas por tus fotos:
-const PANO_ENTRADA = 'https://threejs.org/examples/textures/equirectangular/royal_esplanade_1k.jpg';
-const PANO_PASILLO = 'https://threejs.org/examples/textures/equirectangular/pedestrian_overpass_1k.jpg';
+const PANO_ENTRADA = 'assets/360/entrada.jpg';
+const PANO_PASILLO = 'assets/360/pasillo.jpg';
+
 // Alternativa local (cuando tengas las tuyas):
 // const PANO_ENTRADA = 'assets/360/entrada.jpg';
 // const PANO_PASILLO = 'assets/360/pasillo.jpg';
