@@ -194,8 +194,9 @@ const tourBtnFS      = document.getElementById('tourBtnFS');
 let tourRenderer = null, tourScene = null, tourCamera = null, tourControls = null, tourMesh = null, tourTex = null, tourAnimating = false;
 
 // Panos demo (cámbialos luego por assets/360/entrada.jpg y /pasillo.jpg)
-const PANO_ENTRADA = 'https://threejs.org/examples/textures/equirectangular/royal_esplanade_1k.jpg';
-const PANO_PASILLO = 'https://threejs.org/examples/textures/equirectangular/pedestrian_overpass_1k.jpg';
+const PANO_ENTRADA = 'assets/360/entrada.jpg';
+const PANO_PASILLO = 'assets/360/pasillo.jpg';
+
 
 tourOpenBtn?.addEventListener('click', ()=> {
   tourModal.classList.add('is-open'); tourModal.setAttribute('aria-hidden','false');
