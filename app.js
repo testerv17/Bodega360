@@ -46,8 +46,12 @@ function renderProducts(list){
       <div class="meta">
         <span>$${Number(p.price).toLocaleString()}</span>
         <button class="btn btn-ghost">Detalles</button>
+         <button class="btn btn-ghost qr-btn">QR</button>
+         
+
       </div>`;
     card.querySelector('button').addEventListener('click', ()=> openProductModal(p));
+    card.querySelector('.qr-btn').addEventListener('click', ()=> openQRModal(p));
     grid.appendChild(card);
   });
 }
